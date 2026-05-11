@@ -1,0 +1,508 @@
+/* ==========================================
+   课程列表页面样式 - 移动端预览
+   ========================================== */
+
+/* 页面容器 - 不滚动，手机容器内部滚动 */
+.course-list-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: var(--spacing-lg) 0;
+  background: linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 100%);
+  overflow: hidden;
+  height: 100%;
+}
+
+/* 手机预览框容器 - 固定高度 */
+.phone-preview {
+  width: 375px;
+  height: min(780px, calc(100vh - 100px));
+  background-color: var(--color-phone-frame);
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.phone-preview__screen {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 32px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* iPhone状态栏 */
+.phone-status-bar {
+  height: 44px;
+  background-color: var(--color-phone-frame);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 24px 8px;
+  flex-shrink: 0;
+}
+
+.phone-status-bar__time {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.phone-status-bar__icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.phone-status-bar__icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* iPhone Home指示条 */
+.phone-home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.phone-home-indicator__bar {
+  width: 100px;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+}
+
+/* 页面标题栏 - 固定不滚动 */
+.course-list-content__header {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.course-list-content__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* 搜索栏 - 和筛选按钮并排，固定不滚动 */
+.course-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #ffffff;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border-filter-row);
+}
+
+.course-search-bar__input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.course-search-bar__icon {
+  width: 16px;
+  height: 16px;
+  color: #999999;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.course-search-bar__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.course-search-bar__input::placeholder {
+  color: #999999;
+}
+
+.course-search-bar__filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #f5f5f5;
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.course-search-bar__filter-btn:hover {
+  background-color: #eeeeee;
+  color: var(--color-text-primary);
+}
+
+.course-search-bar__filter-btn--active {
+  background-color: var(--color-brand-primary);
+  color: #ffffff;
+}
+
+.course-search-bar__filter-btn--active:hover {
+  background-color: var(--color-brand-hover);
+}
+
+.course-search-bar__filter-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* 课程列表内容区域 - 仅此区域可滚动 */
+.course-list-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.course-list-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* ==========================================
+   筛选蒙版覆盖层
+   ========================================== */
+
+.filter-overlay {
+  position: absolute;
+  top: 136px; /* status-bar(44) + header(44) + search-bar(48) */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 0 0 32px 32px;
+  overflow: hidden;
+}
+
+.filter-overlay__panel {
+  background-color: #ffffff;
+  overflow-y: auto;
+  max-height: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.filter-overlay__panel::-webkit-scrollbar {
+  display: none;
+}
+
+/* 蒙版过渡动画 */
+.filter-overlay-enter-active {
+  transition: opacity 0.25s ease;
+}
+
+.filter-overlay-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.filter-overlay-enter-from,
+.filter-overlay-leave-to {
+  opacity: 0;
+}
+
+.filter-overlay-enter-active .filter-overlay__panel {
+  animation: filterSlideDown 0.25s ease;
+}
+
+.filter-overlay-leave-active .filter-overlay__panel {
+  animation: filterSlideUp 0.2s ease;
+}
+
+@keyframes filterSlideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes filterSlideUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+}
+
+/* 筛选区域行 */
+.filter-section__row {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-filter-row);
+}
+
+.filter-section__row:last-of-type {
+  border-bottom: none;
+}
+
+.filter-section__label {
+  width: 64px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.filter-section__tags {
+  flex: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.filter-section__tags::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-section__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.filter-section__btn {
+  height: 32px;
+  padding: 0 20px;
+  border-radius: 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-section__btn--reset {
+  background-color: #f5f5f5;
+  color: var(--color-text-secondary);
+  border: 1px solid #e8e8e8;
+}
+
+.filter-section__btn--reset:hover {
+  background-color: #eeeeee;
+}
+
+.filter-section__btn--confirm {
+  background-color: var(--color-brand-primary);
+  color: #ffffff;
+  border: none;
+}
+
+.filter-section__btn--confirm:hover {
+  background-color: var(--color-brand-hover);
+}
+
+/* 筛选标签 */
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.filter-tag--default {
+  background-color: #f5f5f5;
+  color: var(--color-text-primary);
+}
+
+.filter-tag--default:hover {
+  background-color: #ffe4e8;
+}
+
+.filter-tag--active {
+  background-color: var(--color-brand-primary);
+  color: #ffffff;
+}
+
+.filter-tag--active:hover {
+  background-color: var(--color-brand-hover);
+}
+
+/* ==========================================
+   课程卡片网格
+   ========================================== */
+
+.course-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+/* 课程卡片 */
+.course-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.course-card__cover {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.course-card__cover-placeholder {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.course-card__body {
+  padding: 10px;
+}
+
+.course-card__title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 课程卡片标签行 - 可拖拽滚动 */
+.course-card__tags {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  padding-bottom: 2px;
+}
+
+.course-card__tags::-webkit-scrollbar {
+  display: none;
+}
+
+.course-card__tags:active {
+  cursor: grabbing;
+}
+
+/* 课程卡片标签 */
+.course-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.course-tag--pink {
+  background-color: var(--color-tag-pink-bg);
+  color: var(--color-tag-pink-text);
+}
+
+.course-tag--blue {
+  background-color: var(--color-tag-blue-bg);
+  color: var(--color-tag-blue-text);
+}
+
+.course-tag--green {
+  background-color: var(--color-tag-green-bg);
+  color: var(--color-tag-green-text);
+}
+
+.course-tag--orange {
+  background-color: var(--color-tag-orange-bg);
+  color: var(--color-tag-orange-text);
+}
+
+.course-tag--purple {
+  background-color: var(--color-tag-purple-bg);
+  color: var(--color-tag-purple-text);
+}
+
+/* 空状态 */
+.course-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-text-light);
+}
+
+.course-list-empty__icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.course-list-empty__text {
+  font-size: 14px;
+}

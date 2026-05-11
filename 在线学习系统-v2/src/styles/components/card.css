@@ -1,0 +1,172 @@
+.card { background-color: var(--color-bg-white); border: 1px solid var(--color-border); border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; transition: all 0.2s ease; }
+.card:hover { box-shadow: var(--shadow-hover); border-color: var(--color-brand-primary); }
+
+/* 缩略图区域 - 固定高度 */
+.card__thumbnail { 
+  position: relative; 
+  width: 100%; 
+  height: 100px; 
+  background-color: #e8e8e8; 
+  background-size: cover; 
+  background-position: center; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+.card__thumbnail::after { 
+  content: "▶"; 
+  font-size: 20px; 
+  color: rgba(255,255,255,0.9); 
+  background: rgba(0,0,0,0.4); 
+  width: 32px; 
+  height: 32px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+/* 标签 */
+.card__tag { 
+  position: absolute; 
+  top: 6px; 
+  right: 6px; 
+  padding: 2px 8px; 
+  font-size: var(--font-size-xs); 
+  background-color: var(--color-brand-primary); 
+  color: #ffffff; 
+  border-radius: var(--radius-sm); 
+}
+
+/* 内容区域 */
+.card__content { 
+  padding: 6px 8px; 
+  background-color: var(--color-bg-white); 
+}
+
+/* 标题 - 只显示一行 */
+.card__title { 
+  font-size: var(--font-size-sm); 
+  color: var(--color-text-primary); 
+  line-height: 1.4; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: nowrap;
+  min-height: 18px;
+}
+
+/* 底部 - 人名 + 操作按钮 */
+.card__footer { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 4px 8px; 
+  border-top: 1px solid var(--color-border); 
+  background-color: var(--color-bg-white); 
+  min-height: 28px;
+}
+.card__author { font-size: var(--font-size-xs); color: var(--color-text-light); }
+
+/* 操作按钮组 */
+.card__actions { display: flex; gap: 4px; }
+.card__action-btn { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 24px; 
+  height: 24px; 
+  border-radius: var(--radius-sm); 
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.card__action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.card__action-btn--edit { color: #3b82f6; }
+.card__action-btn--edit svg { stroke: #3b82f6; }
+.card__action-btn--edit:hover { background-color: #eff6ff; }
+.card__action-btn--delete { color: #6b7280; }
+.card__action-btn--delete svg { stroke: #6b7280; }
+.card__action-btn--delete:hover { background-color: #f3f4f6; }
+
+/* ==========================================
+   方案一：卡片标签摘要区域
+   横向排列，超出可滚动，隐藏滚动条
+   ========================================== */
+
+/* 标签容器 - 横向滚动 */
+.card__tags-wrapper {
+  margin-top: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.card__tags-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}
+
+.card__tags-wrapper:active {
+  cursor: grabbing;
+}
+
+.card__tags {
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+
+/* 标签项 - 小尺寸 */
+.card__tag-item {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 各维度标签颜色 */
+.card__tag-item--department {
+  background-color: rgba(165, 28, 48, 0.1);
+  color: var(--color-brand-primary);
+  border: 1px solid rgba(165, 28, 48, 0.2);
+}
+
+.card__tag-item--disease {
+  background-color: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.card__tag-item--learnerType {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.card__tag-item--topic {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.card__tag-item--knowledge {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* 标签为空提示 */
+.card__tags-empty {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+}

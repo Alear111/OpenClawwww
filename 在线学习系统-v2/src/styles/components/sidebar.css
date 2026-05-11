@@ -1,0 +1,103 @@
+/* 侧边栏 - 深色背景 */
+.sidebar { 
+  width: var(--sidebar-width); 
+  background-color: var(--color-bg-sidebar); 
+  overflow-y: auto;
+  flex-shrink: 0;
+  position: relative;
+}
+.sidebar__menu { padding: var(--spacing-sm) 0; padding-bottom: 60px; }
+.sidebar__item { border-bottom: 1px solid transparent; }
+
+.sidebar__link { 
+  display: flex; 
+  align-items: center; 
+  width: 100%; 
+  padding: 12px var(--spacing-md); 
+  color: var(--color-text-sidebar); 
+  text-align: left; 
+  transition: background-color 0.2s ease; 
+}
+.sidebar__link:hover { background-color: var(--color-bg-hover); }
+.sidebar__icon { margin-right: var(--spacing-sm); font-size: var(--font-size-md); }
+.sidebar__text { flex: 1; }
+.sidebar__arrow { font-size: 10px; color: var(--color-text-light); transition: transform 0.2s ease; }
+.sidebar__item--expanded .sidebar__arrow { transform: rotate(180deg); }
+
+/* 子菜单 - 使用 transition 实现平滑展开/收起动效 */
+.sidebar__submenu {
+  background-color: rgba(0,0,0,0.2);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+}
+.sidebar__item--expanded .sidebar__submenu {
+  max-height: 200px;
+  opacity: 1;
+}
+.sidebar__subitem { border-left: 3px solid transparent; }
+.sidebar__sublink { 
+  display: block; 
+  padding: 10px var(--spacing-md) 10px 44px; 
+  color: var(--color-text-sidebar); 
+  font-size: var(--font-size-sm); 
+  transition: all 0.2s ease; 
+}
+.sidebar__sublink:hover { 
+  background-color: var(--color-bg-hover); 
+  color: var(--color-text-sidebar-active); 
+  text-decoration: none; 
+}
+
+/* 当前选中项 - 白色文字高亮 */
+.sidebar__sublink--active { 
+  background-color: rgba(255,255,255,0.15); 
+  color: var(--color-text-sidebar-active); 
+  border-left-color: var(--color-brand-primary); 
+}
+
+/* 侧边栏底部区域 - 课程列表入口 */
+.sidebar__footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg-sidebar);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar__footer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--spacing-md);
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-white);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.sidebar__footer-btn:hover {
+  background-color: var(--color-brand-hover);
+  text-decoration: none;
+}
+
+.sidebar__footer-icon {
+  margin-right: var(--spacing-sm);
+  font-size: var(--font-size-md);
+}
+
+.sidebar__footer-text {
+  font-weight: 500;
+}
+
+.sidebar__footer-btn--active {
+  background-color: var(--color-brand-hover);
+  box-shadow: inset 3px 0 0 #ffffff;
+}

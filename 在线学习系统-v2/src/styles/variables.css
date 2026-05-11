@@ -1,0 +1,81 @@
+:root {
+  /* 品牌色 - 中山医院红色 */
+  --color-brand-primary: #a51c30;
+  --color-brand-hover: #8a1728;
+  
+  /* 背景色 */
+  --color-bg-page: #f0f2f5;
+  --color-bg-white: #ffffff;
+  --color-bg-sidebar: #1f2937;
+  --color-bg-panel: #ffffff;
+  --color-bg-header: #ffffff;
+  --color-bg-hover: rgba(255,255,255,0.1);
+  --color-bg-selected: #fff1f3;
+  
+  /* 文字颜色 */
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+  --color-text-light: #999999;
+  --color-text-sidebar: #d1d5db;
+  --color-text-sidebar-active: #ffffff;
+  --color-text-white: #ffffff;
+  
+  /* 边框颜色 */
+  --color-border: #e8e8e8;
+  --color-border-input: #d9d9d9;
+  
+  /* 字体 */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --line-height-normal: 1.5;
+  
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-pill: 14px;
+  
+  /* 阴影 */
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-phone: 0 10px 40px rgba(0, 0, 0, 0.3);
+  
+  /* 布局尺寸 */
+  --header-height: 50px;
+  --sidebar-width: 200px;
+  --directory-panel-width: 260px;
+  --button-height: 32px;
+  --input-height: 32px;
+
+  /* 手机预览框 */
+  --color-phone-frame: #1c1c1e;
+  --color-phone-frame-hover: #2c2c2e;
+
+  /* 搜索栏 */
+  --color-bg-search: #f5f5f5;
+  --color-placeholder: #999999;
+
+  /* 筛选蒙版 */
+  --color-overlay-backdrop: rgba(0, 0, 0, 0.3);
+  --color-border-filter-row: #f0f0f0;
+
+  /* 课程卡片标签色 - 品牌色 */
+  --color-tag-pink-bg: #fff1f3;
+  --color-tag-pink-text: #a51c30;
+  --color-tag-blue-bg: #e6f4ff;
+  --color-tag-blue-text: #1677ff;
+  --color-tag-green-bg: #f6ffed;
+  --color-tag-green-text: #52c41a;
+  --color-tag-orange-bg: #fff7e6;
+  --color-tag-orange-text: #fa8c16;
+  --color-tag-purple-bg: #f9f0ff;
+  --color-tag-purple-text: #722ed1;
+}

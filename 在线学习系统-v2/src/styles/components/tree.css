@@ -1,0 +1,26 @@
+.tree { font-size: var(--font-size-sm); }
+.tree__item { position: relative; }
+.tree__node { display: flex; align-items: center; padding: 6px var(--spacing-sm); cursor: pointer; border-radius: var(--radius-sm); transition: background-color 0.2s ease; }
+.tree__node:hover { background-color: var(--color-bg-hover); }
+
+/* 展开/折叠箭头 */
+.tree__toggle { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-right: 2px; font-size: 10px; color: var(--color-text-light); transition: transform 0.2s ease; }
+.tree__item--expanded > .tree__node .tree__toggle { transform: rotate(90deg); }
+
+/* 所有目录都用文件夹图标 */
+.tree__icon { margin-right: 4px; font-size: 14px; }
+
+/* 文字 */
+.tree__text { flex: 1; color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 更多操作按钮 */
+.tree__more { opacity: 0; padding: 2px 4px; color: var(--color-text-light); font-size: 14px; transition: opacity 0.2s ease; }
+.tree__node:hover .tree__more { opacity: 1; }
+
+/* 选中状态 */
+.tree__item--selected > .tree__node { background-color: var(--color-bg-selected); }
+.tree__item--selected > .tree__node .tree__text { color: var(--color-brand-primary); font-weight: 500; }
+
+/* 子节点 */
+.tree__children { padding-left: 20px; display: none; }
+.tree__item--expanded > .tree__children { display: block; }
