@@ -232,14 +232,11 @@
               <!-- Streaming Output -->
               <div v-if="isStreaming" class="streaming-output">
                 <div class="streaming-output__header">
-                  <span class="streaming-output__title">正在分析...</span>
+                  <span class="streaming-output__title">🤖 智能分析中...</span>
                   <span class="streaming-output__progress">{{ streamingProgress }}%</span>
                 </div>
                 <div class="streaming-output__content" ref="streamingContentRef">
-                  <div v-for="(line, index) in streamingLines" :key="index" class="streaming-output__line">
-                    {{ line }}
-                  </div>
-                  <span v-if="isStreaming" class="streaming-output__cursor">|</span>
+                  <pre class="streaming-output__text">{{ streamingLines.join('\n') }}<span class="streaming-output__cursor">|</span></pre>
                 </div>
               </div>
               
@@ -646,28 +643,128 @@ let streamingTimer = null
 
 // Generate mock analysis result based on file index
 const generateMockResult = (fileIndex) => {
-  const mockNames = ['呼吸机相关肺炎防控', '导管相关血流感染预防', '手术部位感染控制', '多重耐药菌管理', '手卫生规范操作']
-  const mockLecturers = ['张医生', '李主任', '王教授', '刘医师', '陈专家']
-  const mockDepartments = [['感染科'], ['重症医学科'], ['外科'], ['护理部'], ['急诊科']]
-  const mockDiseases = [['呼吸机相关肺炎'], ['导管相关血流感染'], ['手术部位感染'], ['多重耐药菌感染'], ['医院获得性肺炎']]
-  const mockLearnerTypes = [['住院医师', '主治医师'], ['护理人员'], ['规培生', '实习生'], ['副主任医师', '主任医师'], ['医学生']]
-  const mockTopics = [['医院感染防控'], ['消毒灭菌技术'], ['职业防护'], ['手卫生'], ['医疗废物管理']]
-  const mockKnowledge = [['定义', '病因', '预防措施'], ['诊断标准', '治疗原则'], ['操作规范', '注意事项'], ['护理要点', '健康宣教'], ['临床表现', '鉴别诊断']]
-  
-  const idx = fileIndex % mockNames.length
-  return {
-    resourceName: mockNames[idx],
-    lecturer: mockLecturers[idx],
-    externalLecturer: '',
-    intro: `本课程详细讲解${mockNames[idx]}的相关知识，包括${mockKnowledge[idx].join('、')}等内容。`,
-    tags: {
-      department: mockDepartments[idx],
-      disease: mockDiseases[idx],
-      learnerType: mockLearnerTypes[idx],
-      topic: mockTopics[idx],
-      knowledge: mockKnowledge[idx]
+  const mockData = [
+    {
+      resourceName: '《呼吸机相关肺炎的预防与控制》',
+      lecturer: '张明',
+      externalLecturer: '暂未识别',
+      intro: '本课程讲解呼吸机相关肺炎的定义、风险因素、预防措施和护理要点。',
+      tags: {
+        department: ['呼吸内科', '重症医学科'],
+        disease: ['呼吸机相关肺炎', '医院获得性肺炎'],
+        learnerType: ['住院医师', '护理人员'],
+        topic: ['医院感染防控', '呼吸支持技术'],
+        knowledge: ['呼吸机相关肺炎定义', '危险因素识别', '预防措施', '护理要点']
+      }
+    },
+    {
+      resourceName: '《导管相关血流感染预防指南》',
+      lecturer: '李华',
+      externalLecturer: '暂未识别',
+      intro: '本课程详细讲解导管相关血流感染的诊断标准、预防措施和护理规范。',
+      tags: {
+        department: ['重症医学科', '感染科'],
+        disease: ['导管相关血流感染', '败血症'],
+        learnerType: ['主治医师', '住院医师'],
+        topic: ['医院感染防控', '静脉治疗'],
+        knowledge: ['诊断标准', '预防措施', '护理规范', '并发症处理']
+      }
+    },
+    {
+      resourceName: '《手术部位感染控制规范》',
+      lecturer: '王强',
+      externalLecturer: '暂未识别',
+      intro: '本课程介绍手术部位感染的定义、分类、预防控制措施及监测方法。',
+      tags: {
+        department: ['外科', '手术室'],
+        disease: ['手术部位感染'],
+        learnerType: ['住院医师', '规培生'],
+        topic: ['消毒灭菌技术', '医院感染防控'],
+        knowledge: ['定义与分类', '预防措施', '监测方法', '抗生素使用']
+      }
+    },
+    {
+      resourceName: '《多重耐药菌管理与防控》',
+      lecturer: '刘芳',
+      externalLecturer: '暂未识别',
+      intro: '本课程讲解多重耐药菌的流行病学、耐药机制、感染控制策略和抗菌药物管理。',
+      tags: {
+        department: ['感染科', '检验科'],
+        disease: ['多重耐药菌感染', '医院获得性肺炎'],
+        learnerType: ['主治医师', '副主任医师'],
+        topic: ['医院感染防控', '药物治疗'],
+        knowledge: ['耐药机制', '感染控制', '抗菌药物管理', '隔离措施']
+      }
+    },
+    {
+      resourceName: '《手卫生规范操作培训》',
+      lecturer: '陈静',
+      externalLecturer: '暂未识别',
+      intro: '本课程演示手卫生的正确操作步骤、时机选择和注意事项。',
+      tags: {
+        department: ['护理部', '感染科'],
+        disease: ['医院获得性肺炎', '尿路感染'],
+        learnerType: ['护理人员', '实习生'],
+        topic: ['手卫生', '医院感染防控'],
+        knowledge: ['操作规范', '时机选择', '注意事项', '效果评价']
+      }
     }
-  }
+  ]
+  
+  return mockData[fileIndex % mockData.length]
+}
+
+// Generate streaming text with rich content
+const generateStreamingText = (fileIndex) => {
+  const mockResult = generateMockResult(fileIndex)
+  
+  return `正在分析文件内容...
+
+✓ 资源类型：视频课程
+✓ 资源名称：${mockResult.resourceName}
+✓ 讲师：${mockResult.lecturer}
+✓ 院外讲师：${mockResult.externalLecturer}
+✓ 简介：${mockResult.intro}
+
+基础设置已填充完成！
+
+---
+
+正在分析视频画面...
+
+✓ 检测到5个关键画面帧
+✓ 推荐以下封面选择方案
+
+请从以下建议中选择或上传自定义封面
+
+---
+
+正在进行标签智能分析...
+
+🏥 科室标签
+   • 核心标签：${mockResult.tags.department[0]} (95% 置信度)
+     依据：视频内容涉及相关科室专业内容
+   ${mockResult.tags.department[1] ? `• 关联标签：${mockResult.tags.department[1]}` : ''}
+
+🦠 病种标签
+   • 核心标签：${mockResult.tags.disease[0]} (98% 置信度)
+     依据：课程标题明确提及，内容主体围绕该疾病展开
+   ${mockResult.tags.disease[1] ? `• 关联标签：${mockResult.tags.disease[1]}` : ''}
+
+👨‍⚕️ 学员类型
+   • 核心标签：${mockResult.tags.learnerType[0]} (90% 置信度)
+     依据：课程深度适合该层次学员培训要求
+   ${mockResult.tags.learnerType[1] ? `• 关联标签：${mockResult.tags.learnerType[1]}` : ''}
+
+📚 课程主题
+   • 核心标签：${mockResult.tags.topic[0]} (92% 置信度)
+     依据：课程核心内容匹配该主题
+   ${mockResult.tags.topic[1] ? `• 关联标签：${mockResult.tags.topic[1]}` : ''}
+
+📌 知识点
+   ${mockResult.tags.knowledge.map(k => `• ${k}`).join('\n   ')}
+
+标签分析已完成！`
 }
 
 const startStreaming = () => {
@@ -683,38 +780,24 @@ const startStreaming = () => {
   streamingLines.value = []
   streamingProgress.value = 0
   
-  const lines = [
-    '正在提取视频关键帧...',
-    '识别到讲师：张医生',
-    '正在分析音频内容...',
-    '识别到课程主题：医院感染防控',
-    '正在提取字幕文本...',
-    '识别到知识点：定义、病因、预防措施',
-    '正在分析视频画面...',
-    '识别到操作场景：临床操作教学',
-    '分析完成！'
-  ]
-  
-  let lineIndex = 0
+  const fullText = generateStreamingText(currentFileIndex.value)
   let charIndex = 0
-  let currentLine = ''
+  const totalChars = fullText.length
   
   streamingTimer = setInterval(() => {
-    if (lineIndex < lines.length) {
-      if (charIndex < lines[lineIndex].length) {
-        currentLine += lines[lineIndex][charIndex]
-        streamingLines.value[streamingLines.value.length - 1] = currentLine
-        charIndex++
-        streamingProgress.value = Math.round(((lineIndex * 10 + charIndex) / (lines.length * 10)) * 100)
-      } else {
-        streamingLines.value[streamingLines.value.length - 1] = currentLine
-        lineIndex++
-        charIndex = 0
-        currentLine = ''
-        if (lineIndex < lines.length) {
-          streamingLines.value.push('')
+    if (charIndex < totalChars) {
+      // Add characters one by one for typewriter effect
+      const currentText = fullText.substring(0, charIndex + 1)
+      streamingLines.value = currentText.split('\n')
+      charIndex++
+      streamingProgress.value = Math.round((charIndex / totalChars) * 100)
+      
+      // Auto scroll to bottom
+      nextTick(() => {
+        if (streamingContentRef.value) {
+          streamingContentRef.value.scrollTop = streamingContentRef.value.scrollHeight
         }
-      }
+      })
     } else {
       stopStreaming()
       streamingComplete.value = true
@@ -736,7 +819,13 @@ const startStreaming = () => {
       fileResult.lecturer = mockResult.lecturer
       fileResult.externalLecturer = mockResult.externalLecturer
       fileResult.intro = mockResult.intro
-      fileResult.tags = { ...mockResult.tags }
+      fileResult.tags = { 
+        department: [...mockResult.tags.department],
+        disease: [...mockResult.tags.disease],
+        learnerType: [...mockResult.tags.learnerType],
+        topic: [...mockResult.tags.topic],
+        knowledge: [...mockResult.tags.knowledge]
+      }
       
       currentStep.value = 1
       step1Confirmed.value = false
@@ -746,7 +835,7 @@ const startStreaming = () => {
       expandedSteps[2] = false
       expandedSteps[3] = false
     }
-  }, 50)
+  }, 15) // Faster typing speed for smoother effect
 }
 
 const stopStreaming = () => {
@@ -1372,28 +1461,32 @@ watch(() => props.visible, (val) => {
 
 /* Streaming Output */
 .streaming-output {
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
+  background: #fff;
+  border: 1px solid #e8e8e8;
   border-radius: 8px;
-  padding: 12px;
+  padding: 0;
   margin-bottom: 16px;
+  overflow: hidden;
 }
 
 .streaming-output__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #a51c30 0%, #c9435a 100%);
+  color: #fff;
 }
 
 .streaming-output__title {
-  font-size: 12px;
-  color: #666;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
 }
 
 .streaming-output__progress {
   font-size: 12px;
-  color: #a51c30;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
 }
 
@@ -1401,17 +1494,26 @@ watch(() => props.visible, (val) => {
   font-size: 12px;
   color: #333;
   line-height: 1.8;
-  max-height: 120px;
+  max-height: 300px;
   overflow-y: auto;
+  padding: 12px;
+  background: #fafafa;
 }
 
-.streaming-output__line {
+.streaming-output__text {
+  margin: 0;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #333;
 }
 
 .streaming-output__cursor {
   animation: blink 1s infinite;
   color: #a51c30;
+  font-weight: bold;
 }
 
 @keyframes blink {
