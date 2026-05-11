@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 import ResourceManagement from './views/ResourceManagement.vue'
 import UsageStatistics from './views/UsageStatistics.vue'
@@ -21,7 +21,7 @@ import './styles/pages/course-list.css'
 
 // 路由配置
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     { path: '/', redirect: '/resource' },
     { path: '/resource', component: ResourceManagement },
