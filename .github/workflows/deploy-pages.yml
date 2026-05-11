@@ -1,24 +1,14 @@
-name: 自动构建部署到GitHub Pages
+name: 多分支自动部署到GitHub Pages
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "test" ]
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
+  contents: write
 jobs:
   build-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    # 全局指定工作目录，所有步骤都默认在这个目录下执行
-    defaults:
-      run:
-        working-directory: ./在线学习系统-v2
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
@@ -27,23 +17,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # 完全删掉缓存配置，不需要锁文件
 
       - name: 安装依赖
-        run: npm install
+        run: cd 在线学习系统-v2 && npm install
 
-      - name: 构建生产版本
-        run: npm run build
+      - name: 根据分支设置base路径并构建
+        run: |
+          cd 在线学习系统-v2
+          if [ "${{ github.ref_name }}" == "test" ]; then
+            echo "export default defineConfig({ base: '/OpenClawwww/test/', plugins: [vue()], server: { port: 5173 } })" > vite.config.js
+            npm run build
+            mkdir -p ../dist/test
+            mv dist/* ../dist/test/
+          else
+            echo "export default defineConfig({ base: '/OpenClawwww/', plugins: [vue()], server: { port: 5173 } })" > vite.config.js
+            npm run build
+            mkdir -p ../dist
+            mv dist/* ../dist/
+          fi
 
-      - name: 配置Pages
-        uses: actions/configure-pages@v5
-
-      - name: 上传构建产物
-        uses: actions/upload-pages-artifact@v3
+      - name: 部署到gh-pages分支
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          # 完整指定dist路径
-          path: './在线学习系统-v2/dist'
-
-      - name: 部署到GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          keep_files: true
