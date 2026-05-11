@@ -1,0 +1,45 @@
+name: 自动构建部署到GitHub Pages
+on:
+  push:
+    branches: [ "main" ] # 只在main分支push的时候触发
+  workflow_dispatch: # 支持手动触发构建
+
+permissions:
+  contents: read
+  pages: write # 需要Pages写权限
+  id-token: write # 需要id-token权限
+
+jobs:
+  build-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 配置Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './在线学习系统-v2/package-lock.json'
+
+      - name: 安装依赖
+        run: cd 在线学习系统-v2 && npm ci
+
+      - name: 构建生产版本
+        run: cd 在线学习系统-v2 && npm run build
+
+      - name: 配置Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './在线学习系统-v2/dist' # 上传build出来的dist目录
+
+      - name: 部署到GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
