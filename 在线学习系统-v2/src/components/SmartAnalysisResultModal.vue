@@ -248,16 +248,16 @@
                 <!-- Step 1: Basic Info -->
                 <div class="confirm-step" :class="{ 
                   'confirm-step--active': currentStep === 1, 
-                  'confirm-step--done': currentStep > 1 
+                  'confirm-step--done': step1Confirmed
                 }">
-                  <div class="confirm-step__header" @click="currentStep === 1 && toggleStep(1)">
+                  <div class="confirm-step__header" @click="toggleStep(1)">
                     <div class="confirm-step__title">
-                      <span class="confirm-step__num">{{ currentStep > 1 ? '✓' : '1' }}</span>
+                      <span class="confirm-step__num">{{ step1Confirmed ? '✓' : '1' }}</span>
                       <span>基础信息</span>
                     </div>
-                    <span v-if="currentStep === 1" class="confirm-step__arrow">▼</span>
+                    <span class="confirm-step__arrow" :class="{ 'confirm-step__arrow--expanded': expandedSteps[1] }">▼</span>
                   </div>
-                  <div v-show="currentStep === 1" class="confirm-step__body">
+                  <div v-show="expandedSteps[1]" class="confirm-step__body">
                     <div class="form-group">
                       <label class="form-label">资源名称</label>
                       <input type="text" class="input input--full" v-model="tempFormData.resourceName" placeholder="请输入资源名称">
@@ -281,21 +281,27 @@
                 <!-- Step 2: Cover Selection -->
                 <div class="confirm-step" :class="{ 
                   'confirm-step--active': currentStep === 2, 
-                  'confirm-step--done': currentStep > 2,
+                  'confirm-step--done': step2Confirmed,
                   'confirm-step--disabled': currentStep < 2
                 }">
-                  <div class="confirm-step__header" @click="currentStep === 2 && toggleStep(2)">
+                  <div class="confirm-step__header" @click="currentStep >= 2 && toggleStep(2)">
                     <div class="confirm-step__title">
-                      <span class="confirm-step__num">{{ currentStep > 2 ? '✓' : '2' }}</span>
+                      <span class="confirm-step__num">{{ step2Confirmed ? '✓' : '2' }}</span>
                       <span>封面选择</span>
                     </div>
-                    <span v-if="currentStep === 2" class="confirm-step__arrow">▼</span>
+                    <span class="confirm-step__arrow" :class="{ 'confirm-step__arrow--expanded': expandedSteps[2] }">▼</span>
                   </div>
-                  <div v-show="currentStep === 2" class="confirm-step__body">
-                    <div class="cover-preview">
-                      <div class="cover-preview__img">
-                        <span>📷</span>
-                        <span>自动提取视频封面</span>
+                  <div v-show="expandedSteps[2]" class="confirm-step__body">
+                    <div class="cover-selection">
+                      <div 
+                        v-for="(cover, idx) in coverOptions" 
+                        :key="idx"
+                        class="cover-option"
+                        :class="{ 'cover-option--selected': selectedCoverIndex === idx }"
+                        @click="selectCover(idx)"
+                      >
+                        <img :src="cover" :alt="'封面' + (idx + 1)">
+                        <div class="cover-option__check" v-if="selectedCoverIndex === idx">✓</div>
                       </div>
                     </div>
                     <button class="button button--primary button--sm" @click="confirmStep(2)">确认封面</button>
@@ -305,17 +311,17 @@
                 <!-- Step 3: Tag Info -->
                 <div class="confirm-step" :class="{ 
                   'confirm-step--active': currentStep === 3, 
-                  'confirm-step--done': allStepsConfirmed,
+                  'confirm-step--done': step3Confirmed,
                   'confirm-step--disabled': currentStep < 3
                 }">
-                  <div class="confirm-step__header" @click="currentStep === 3 && toggleStep(3)">
+                  <div class="confirm-step__header" @click="currentStep >= 3 && toggleStep(3)">
                     <div class="confirm-step__title">
-                      <span class="confirm-step__num">{{ allStepsConfirmed ? '✓' : '3' }}</span>
+                      <span class="confirm-step__num">{{ step3Confirmed ? '✓' : '3' }}</span>
                       <span>标签信息</span>
                     </div>
-                    <span v-if="currentStep === 3" class="confirm-step__arrow">▼</span>
+                    <span class="confirm-step__arrow" :class="{ 'confirm-step__arrow--expanded': expandedSteps[3] }">▼</span>
                   </div>
-                  <div v-show="currentStep === 3" class="confirm-step__body">
+                  <div v-show="expandedSteps[3]" class="confirm-step__body">
                     <div class="confirm-tags">
                       <div class="confirm-tags__group">
                         <span class="confirm-tags__label">科室</span>
@@ -408,6 +414,27 @@ const step3Confirmed = ref(false)
 
 const allStepsConfirmed = computed(() => step1Confirmed.value && step2Confirmed.value && step3Confirmed.value)
 
+// Expanded steps tracking (for collapsible confirmed steps)
+const expandedSteps = reactive({
+  1: true,
+  2: false,
+  3: false
+})
+
+// Cover selection
+const coverOptions = ref([
+  'https://picsum.photos/200/120?random=1',
+  'https://picsum.photos/200/120?random=2',
+  'https://picsum.photos/200/120?random=3',
+  'https://picsum.photos/200/120?random=4',
+  'https://picsum.photos/200/120?random=5'
+])
+const selectedCoverIndex = ref(0)
+
+const selectCover = (idx) => {
+  selectedCoverIndex.value = idx
+}
+
 // Temp form data for editing
 const tempFormData = reactive({
   resourceName: '',
@@ -488,9 +515,41 @@ const switchFile = (index) => {
   }
   
   // Update current step states from fileResult
-  step1Confirmed.value = fileResult.step1Confirmed
-  step2Confirmed.value = fileResult.step2Confirmed
-  step3Confirmed.value = fileResult.step3Confirmed
+  step1Confirmed.value = fileResult.step1Confirmed || false
+  step2Confirmed.value = fileResult.step2Confirmed || false
+  step3Confirmed.value = fileResult.step3Confirmed || false
+  
+  // Update expanded steps based on current progress
+  expandedSteps[1] = !fileResult.step1Confirmed
+  expandedSteps[2] = false
+  expandedSteps[3] = false
+  
+  // Sync Part 2 form data from fileResult
+  formData.resourceName = fileResult.resourceName || ''
+  formData.lecturer = fileResult.lecturer || ''
+  formData.externalLecturer = fileResult.externalLecturer || ''
+  formData.intro = fileResult.intro || ''
+  formData.coverUrl = fileResult.coverUrl || ''
+  formData.completionRate = fileResult.completionRate || 80
+  formData.tags.department = [...(fileResult.tags?.department || [])]
+  formData.tags.disease = [...(fileResult.tags?.disease || [])]
+  formData.tags.learnerType = [...(fileResult.tags?.learnerType || [])]
+  formData.tags.topic = [...(fileResult.tags?.topic || [])]
+  formData.tags.knowledge = [...(fileResult.tags?.knowledge || [])]
+  
+  // Sync Part 3 temp form data from fileResult
+  tempFormData.resourceName = fileResult.resourceName || ''
+  tempFormData.lecturer = fileResult.lecturer || ''
+  tempFormData.externalLecturer = fileResult.externalLecturer || ''
+  tempFormData.intro = fileResult.intro || ''
+  tempFormData.tags.department = [...(fileResult.tags?.department || [])]
+  tempFormData.tags.disease = [...(fileResult.tags?.disease || [])]
+  tempFormData.tags.learnerType = [...(fileResult.tags?.learnerType || [])]
+  tempFormData.tags.topic = [...(fileResult.tags?.topic || [])]
+  tempFormData.tags.knowledge = [...(fileResult.tags?.knowledge || [])]
+  
+  // Reset cover selection
+  selectedCoverIndex.value = 0
   
   // Only trigger streaming when:
   // 1. File exists and status is 'completed' (analysis done)
@@ -508,9 +567,11 @@ const switchFile = (index) => {
   }
 }
 
-// Toggle step
+// Toggle step (expand/collapse)
 const toggleStep = (step) => {
-  // Allow collapsing
+  // Only allow toggling if step is accessible
+  if (step > currentStep.value) return
+  expandedSteps[step] = !expandedSteps[step]
 }
 
 // Confirm step
@@ -525,22 +586,46 @@ const confirmStep = (step) => {
     fileResult.intro = tempFormData.intro
     fileResult.step1Confirmed = true
     step1Confirmed.value = true
+    expandedSteps[1] = false
     currentStep.value = 2
+    expandedSteps[2] = true
+    
+    // Sync step 1 data to Part 2 immediately
+    formData.resourceName = tempFormData.resourceName
+    formData.lecturer = tempFormData.lecturer
+    formData.externalLecturer = tempFormData.externalLecturer
+    formData.intro = tempFormData.intro
   } else if (step === 2) {
     // Save step 2 data (cover)
-    fileResult.coverUrl = formData.coverUrl
+    fileResult.coverUrl = coverOptions.value[selectedCoverIndex.value]
     fileResult.step2Confirmed = true
     step2Confirmed.value = true
+    expandedSteps[2] = false
     currentStep.value = 3
+    expandedSteps[3] = true
+    
+    // Sync cover to Part 2 immediately
+    formData.coverUrl = coverOptions.value[selectedCoverIndex.value]
   } else if (step === 3) {
     // Save step 3 data (tags)
-    fileResult.tags = { ...tempFormData.tags }
+    fileResult.tags = { 
+      department: [...tempFormData.tags.department],
+      disease: [...tempFormData.tags.disease],
+      learnerType: [...tempFormData.tags.learnerType],
+      topic: [...tempFormData.tags.topic],
+      knowledge: [...tempFormData.tags.knowledge]
+    }
     fileResult.completionRate = formData.completionRate
     fileResult.step3Confirmed = true
     step3Confirmed.value = true
+    expandedSteps[3] = false
     
-    // Sync ALL confirmed data to Part 2 (formData) for final submission
-    syncToPart2()
+    // Sync tags to Part 2 immediately
+    formData.tags.department = [...tempFormData.tags.department]
+    formData.tags.disease = [...tempFormData.tags.disease]
+    formData.tags.learnerType = [...tempFormData.tags.learnerType]
+    formData.tags.topic = [...tempFormData.tags.topic]
+    formData.tags.knowledge = [...tempFormData.tags.knowledge]
   }
 }
 
@@ -559,8 +644,39 @@ const syncToPart2 = () => {
 // Streaming simulation
 let streamingTimer = null
 
+// Generate mock analysis result based on file index
+const generateMockResult = (fileIndex) => {
+  const mockNames = ['呼吸机相关肺炎防控', '导管相关血流感染预防', '手术部位感染控制', '多重耐药菌管理', '手卫生规范操作']
+  const mockLecturers = ['张医生', '李主任', '王教授', '刘医师', '陈专家']
+  const mockDepartments = [['感染科'], ['重症医学科'], ['外科'], ['护理部'], ['急诊科']]
+  const mockDiseases = [['呼吸机相关肺炎'], ['导管相关血流感染'], ['手术部位感染'], ['多重耐药菌感染'], ['医院获得性肺炎']]
+  const mockLearnerTypes = [['住院医师', '主治医师'], ['护理人员'], ['规培生', '实习生'], ['副主任医师', '主任医师'], ['医学生']]
+  const mockTopics = [['医院感染防控'], ['消毒灭菌技术'], ['职业防护'], ['手卫生'], ['医疗废物管理']]
+  const mockKnowledge = [['定义', '病因', '预防措施'], ['诊断标准', '治疗原则'], ['操作规范', '注意事项'], ['护理要点', '健康宣教'], ['临床表现', '鉴别诊断']]
+  
+  const idx = fileIndex % mockNames.length
+  return {
+    resourceName: mockNames[idx],
+    lecturer: mockLecturers[idx],
+    externalLecturer: '',
+    intro: `本课程详细讲解${mockNames[idx]}的相关知识，包括${mockKnowledge[idx].join('、')}等内容。`,
+    tags: {
+      department: mockDepartments[idx],
+      disease: mockDiseases[idx],
+      learnerType: mockLearnerTypes[idx],
+      topic: mockTopics[idx],
+      knowledge: mockKnowledge[idx]
+    }
+  }
+}
+
 const startStreaming = () => {
   if (isStreaming.value) return
+  
+  const fileResult = getCurrentFileResult()
+  
+  // Mark this file as having shown streaming
+  fileResult.hasShownStreaming = true
   
   isStreaming.value = true
   streamingComplete.value = false
@@ -602,12 +718,33 @@ const startStreaming = () => {
     } else {
       stopStreaming()
       streamingComplete.value = true
-      hasShownStreaming.value = true
-      initTempFormData()
+      
+      // Generate and populate mock analysis result
+      const mockResult = generateMockResult(currentFileIndex.value)
+      tempFormData.resourceName = mockResult.resourceName
+      tempFormData.lecturer = mockResult.lecturer
+      tempFormData.externalLecturer = mockResult.externalLecturer
+      tempFormData.intro = mockResult.intro
+      tempFormData.tags.department = [...mockResult.tags.department]
+      tempFormData.tags.disease = [...mockResult.tags.disease]
+      tempFormData.tags.learnerType = [...mockResult.tags.learnerType]
+      tempFormData.tags.topic = [...mockResult.tags.topic]
+      tempFormData.tags.knowledge = [...mockResult.tags.knowledge]
+      
+      // Also save to fileResult
+      fileResult.resourceName = mockResult.resourceName
+      fileResult.lecturer = mockResult.lecturer
+      fileResult.externalLecturer = mockResult.externalLecturer
+      fileResult.intro = mockResult.intro
+      fileResult.tags = { ...mockResult.tags }
+      
       currentStep.value = 1
       step1Confirmed.value = false
       step2Confirmed.value = false
       step3Confirmed.value = false
+      expandedSteps[1] = true
+      expandedSteps[2] = false
+      expandedSteps[3] = false
     }
   }, 50)
 }
@@ -773,6 +910,10 @@ watch(() => props.visible, (val) => {
     step1Confirmed.value = false
     step2Confirmed.value = false
     step3Confirmed.value = false
+    expandedSteps[1] = true
+    expandedSteps[2] = false
+    expandedSteps[3] = false
+    selectedCoverIndex.value = 0
   }
 })
 </script>
@@ -1351,6 +1492,10 @@ watch(() => props.visible, (val) => {
   transition: transform 0.2s;
 }
 
+.confirm-step__arrow--expanded {
+  transform: rotate(180deg);
+}
+
 .confirm-step__body {
   padding: 12px;
   border-top: 1px solid #f0f0f0;
@@ -1366,9 +1511,70 @@ watch(() => props.visible, (val) => {
   width: 100%;
 }
 
-/* Cover Preview */
+/* Cover Selection Grid */
+.cover-selection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cover-option {
+  position: relative;
+  aspect-ratio: 16/10;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.cover-option:hover {
+  border-color: #d9d9d9;
+}
+
+.cover-option--selected {
+  border-color: #a51c30;
+}
+
+.cover-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-option__check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #a51c30;
+  color: #fff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cover Preview (legacy) */
 .cover-preview {
   margin-bottom: 8px;
+}
+
+.cover-preview__img {
+  height: 80px;
+  background: #f5f5f5;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #999;
+  font-size: 12px;
 }
 
 .cover-preview__img {

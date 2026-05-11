@@ -373,7 +373,6 @@ watch(() => props.visible, (val) => {
     // 关闭时重置
     fileStatus.value = ''
     fileError.value = false
-    showIdentifyBtn.value = false
     uploadBtnText.value = '点击上传'
     uploadBtnDisabled.value = false
     // 重置表单数据
