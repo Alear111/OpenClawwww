@@ -1,13 +1,13 @@
 name: 自动构建部署到GitHub Pages
 on:
   push:
-    branches: [ "main" ] # 只在main分支push的时候触发
-  workflow_dispatch: # 支持手动触发构建
+    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write # 需要Pages写权限
-  id-token: write # 需要id-token权限
+  pages: write
+  id-token: write
 
 jobs:
   build-deploy:
@@ -15,6 +15,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    # 全局指定工作目录，所有步骤都默认在这个目录下执行
+    defaults:
+      run:
+        working-directory: ./在线学习系统-v2
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
@@ -23,13 +27,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          # 完全删掉缓存配置，不需要锁文件
 
       - name: 安装依赖
-        run: cd 在线学习系统-v2 && npm install
+        run: npm install
 
       - name: 构建生产版本
-        run: cd 在线学习系统-v2 && npm run build
+        run: npm run build
 
       - name: 配置Pages
         uses: actions/configure-pages@v5
@@ -37,7 +41,8 @@ jobs:
       - name: 上传构建产物
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './在线学习系统-v2/dist' # 上传build出来的dist目录
+          # 完整指定dist路径
+          path: './在线学习系统-v2/dist'
 
       - name: 部署到GitHub Pages
         id: deployment
